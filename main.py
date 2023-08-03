@@ -1,50 +1,42 @@
-from prepare_pdf import textcleaner
-import openai
+import prepare_pdf as prep
+from variables import model
 import time
-import pandas as pd
+import openai
 import os
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+
 def get_response(file_path: str):
 
-    content = textcleaner(file_path)
+    content = prep.batch(prep.text_cleaner(file_path), 1000)
     every_response = []
+    token_count = 0
 
-    # first response
-    first_prompt = openai.Completion.create(
-        model="text-davinci-003",
-        prompt="Hello? Can you hear me?",
-        max_tokens=7,
-        temperature=0,
-    )
-    every_response.append(first_prompt)
-
-    """
     # text of the financial report
     for prompt in content:
+        token_count =+ len(prompt) + 1
         response = openai.Completion.create(
-              model="gpt-3.5-turbo",
-              prompt=prompt,
-              max_tokens=2000,
-              temperature=0,
+            model=model,
+            prompt=prompt,
+            max_tokens=1,
+            temperature=0,
             )
+        time.sleep(1)
+        if token_count >= 4050:
+            time.sleep(60)
         every_response.append(response)
-        print(response)
-        time.sleep(4)
+        time.sleep(1)
 
     # last response
     last_prompt = openai.Completion.create(
-        model="gpt-3.5-turbo",
-        prompt="Okay I am finished. please give me an overview about the current situation"
+        model=model,
+        prompt="Okay I am finished. please give me an overview about the current situation of the company"
                " and the most important facts.",
-        max_tokens=2000,
+        max_tokens=3000,
         temperature=0,
     )
     
     every_response.append(last_prompt)
-    """
 
-    return every_response
-
-print(get_response('/Users/sping/Downloads/_10-Q-Q2-2023-As-Filed.pdf'))
+    return every_response[-1]["choices"][0]["text"]

@@ -1,6 +1,5 @@
 from pdfminer.high_level import extract_text
 import variables
-from itertools import islice
 import tiktoken
 import re
 
@@ -14,19 +13,34 @@ def text_cleaner(pdf_file: str):
     :param pdf_file: path to pdf file
     """
     text = extract_text(pdf_file)  # extract text from pdf
+    enc = tiktoken.encoding_for_model(variables.variable["model"])
+    number_of_tokens = variables.variable["request_size"]
+    lines_per_paragraph = 2
+    filtered_text = []
 
     lines = text.split("\n")  # split text into lines
     paragraphs = text.split("\n\n")  # split text into paragraphs
 
     max_line_length = max([len(line) for line in lines if len(line) < 80])  # get max line length
-    paragraph_length = max_line_length * 4  # define paragraph length
 
-    # clean paragraphs to avoid non-informational characters
-    cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ !?.]', '', paragraph) for paragraph in paragraphs]
-    cleaned_paragraphs = [paragraph.strip(' \n') for paragraph in cleaned_paragraphs]
-    print(cleaned_paragraphs)
+    while number_of_tokens > (variables.variable["request_size"]
+                              - variables.variable["answer_size"]
+                              - len(enc.encode(variables.variable["question"]))):
 
-    filtered_text = [paragraph for paragraph in cleaned_paragraphs if len(paragraph) > paragraph_length]  # filter lines
+        paragraph_length = max_line_length * lines_per_paragraph  # define paragraph length
+
+        # clean paragraphs to avoid non-informational characters
+        cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ !?.]', '', paragraph) for paragraph in paragraphs]
+        cleaned_paragraphs = [paragraph.strip(' \n') for paragraph in cleaned_paragraphs]
+
+        filtered_text = [paragraph for paragraph in cleaned_paragraphs if len(paragraph) > paragraph_length]
+
+        text = " ".join(filtered_text)
+        tokenized_text = enc.encode(text)
+        number_of_tokens = len(tokenized_text)
+
+        lines_per_paragraph += 1
+
     print(filtered_text)
 
     return filtered_text
@@ -34,22 +48,14 @@ def text_cleaner(pdf_file: str):
 
 def batch(filtered_text: list, batch_size: int):
     """
-    Function to batch the text
     :param filtered_text: Text that has been filtered by text_cleaner()
     :param batch_size: Amount of tokens of each request
     """
 
-    batched_text = []
+    messages = []
 
-    text = " ".join(filtered_text)
+    for message in filtered_text:
+        messages.append({"role": "user", "content": message})
+    messages.append({"role": "user", "content": variables.variable["question"]})
 
-    enc = tiktoken.encoding_for_model(variables.variable["model"])
-    tokenized_element = enc.encode(text)
-
-    it = iter(tokenized_element)
-    while batch := tuple(islice(it, batch_size)):
-        batched_text.append(batch)
-
-    return batched_text
-
-text_cleaner("/Users/sping/Downloads/_10-Q-Q2-2023-As-Filed.pdf")
+    return messages

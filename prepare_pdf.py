@@ -19,13 +19,15 @@ def text_cleaner(pdf_file: str):
     paragraphs = text.split("\n\n")  # split text into paragraphs
 
     max_line_length = max([len(line) for line in lines if len(line) < 80])  # get max line length
-    paragraph_length = max_line_length * 5  # define paragraph length
+    paragraph_length = max_line_length * 4  # define paragraph length
 
     # clean paragraphs to avoid non-informational characters
     cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ !?.]', '', paragraph) for paragraph in paragraphs]
     cleaned_paragraphs = [paragraph.strip(' \n') for paragraph in cleaned_paragraphs]
+    print(cleaned_paragraphs)
 
     filtered_text = [paragraph for paragraph in cleaned_paragraphs if len(paragraph) > paragraph_length]  # filter lines
+    print(filtered_text)
 
     return filtered_text
 
@@ -49,3 +51,5 @@ def batch(filtered_text: list, batch_size: int):
         batched_text.append(batch)
 
     return batched_text
+
+text_cleaner("/Users/sping/Downloads/_10-Q-Q2-2023-As-Filed.pdf")

@@ -1,5 +1,5 @@
 from pdfminer.high_level import extract_text
-from variables import model
+import variables
 from itertools import islice
 import tiktoken
 import re
@@ -22,7 +22,7 @@ def text_cleaner(pdf_file: str):
     paragraph_length = max_line_length * 5  # define paragraph length
 
     # clean paragraphs to avoid non-informational characters
-    cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ \!\?\.]', '', paragraph) for paragraph in paragraphs]
+    cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ !?.]', '', paragraph) for paragraph in paragraphs]
     cleaned_paragraphs = [paragraph.strip(' \n') for paragraph in cleaned_paragraphs]
 
     filtered_text = [paragraph for paragraph in cleaned_paragraphs if len(paragraph) > paragraph_length]  # filter lines
@@ -30,21 +30,22 @@ def text_cleaner(pdf_file: str):
     return filtered_text
 
 
-def batch(filtered_text: list, batch_size):
+def batch(filtered_text: list, batch_size: int):
     """
     Function to batch the text
-    :param filtered_text: text that has been filtered by text_cleaner()
+    :param filtered_text: Text that has been filtered by text_cleaner()
+    :param batch_size: Amount of tokens of each request
     """
 
     batched_text = []
 
     text = " ".join(filtered_text)
 
-    enc = tiktoken.encoding_for_model(model)
+    enc = tiktoken.encoding_for_model(variables.variable["model"])
     tokenized_element = enc.encode(text)
 
     it = iter(tokenized_element)
-    while (batch := tuple(islice(it, batch_size))):
+    while batch := tuple(islice(it, batch_size)):
         batched_text.append(batch)
 
     return batched_text

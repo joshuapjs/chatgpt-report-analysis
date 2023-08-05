@@ -1,6 +1,7 @@
 import prepare_pdf as prep
 import variables
 import openai
+import sys
 import os
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -17,6 +18,17 @@ def get_response(file_path: str):
         messages=messages,
         max_tokens=variables.variable["answer_size"],
         temperature=0,
-    )
+    )["choices"][0]["message"]["content"]
 
-    return response["choices"][0]["message"]["content"]
+    print(response)
+
+    return response
+
+
+if __name__ == "__main__":
+
+    if not os.path.isfile(sys.argv[1]):
+        print(f"File path {sys.argv[1]} does not exist.")
+        sys.exit(1)
+
+    get_response(sys.argv[1])

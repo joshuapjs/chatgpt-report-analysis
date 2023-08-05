@@ -6,30 +6,32 @@ import re
 
 def text_cleaner(pdf_file: str):
     """
-    Function to select only lines that are lo
-    ng enough
+    Function to select only lines that are long enough
     From which I expect that they are pure text lines and therefore
     relevant for and interpretable by ChatGPT
     :param pdf_file: path to pdf file
     """
-    text = extract_text(pdf_file)  # extract text from pdf
-    enc = tiktoken.encoding_for_model(variables.variable["model"])
+    text = extract_text(pdf_file)
+    enc = tiktoken.encoding_for_model(variables.variable["model"])  # get the encoding of the model
     number_of_tokens = variables.variable["request_size"]
     lines_per_paragraph = 2
     filtered_text = []
 
-    lines = text.split("\n")  # split text into lines
-    paragraphs = text.split("\n\n")  # split text into paragraphs
+    # Splitting the text into subsections
+    lines = text.split("\n")
+    paragraphs = text.split("\n\n")
 
-    max_line_length = max([len(line) for line in lines if len(line) < 80])  # get max line length
+    max_line_length = max([len(line) for line in lines if len(line) < 80])
 
+    # Adjusting the paragraph selection to the request size
+    # If the request size
     while number_of_tokens > (variables.variable["request_size"]
                               - variables.variable["answer_size"]
                               - len(enc.encode(variables.variable["question"]))):
 
         paragraph_length = max_line_length * lines_per_paragraph  # define paragraph length
 
-        # clean paragraphs to avoid non-informational characters
+        # Clean paragraphs to avoid non-informational characters
         cleaned_paragraphs = [re.sub(r'[^a-zA-Z0-9$€ !?.]', '', paragraph) for paragraph in paragraphs]
         cleaned_paragraphs = [paragraph.strip(' \n') for paragraph in cleaned_paragraphs]
 

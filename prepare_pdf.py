@@ -41,8 +41,6 @@ def text_cleaner(pdf_file: str):
 
         lines_per_paragraph += 1
 
-    print(filtered_text)
-
     return filtered_text
 
 

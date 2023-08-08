@@ -1,5 +1,5 @@
 # chatgpt-report-analysis
-A simple tool to make financial reports digestable. Let a model of OpenAI read the text of a Financial Report as PDF and ask your questions about it to get an overview and save time.
+A simple tool to make financial reports digestable. Utilize the capabilities of OpenAI's API to read the text of PDFs of a Financial Report and ask your question about it to get an overview and save time.
 
 ## Prerequisites
 
@@ -14,7 +14,7 @@ Before you begin, ensure you have met the following requirements:
 
 ## Setup
 
-- Set your OpenAI API key in an environment variable named `OPENAI_API_KEY`.
+- Store your OpenAI API key in an environment variable named `OPENAI_API_KEY`.
 - Adjust the parameters accordingly in the `variables.py` file for:
   - **"model"**
   - **"request_size"**
@@ -27,9 +27,9 @@ Get ChatGPT to answer your **"question"** about the text in the Financial Report
 
 ## Usage
 
-### Run the script through your terminal
+### Run the package through your terminal
 
-Please make sure to change path to the path of the PDF file you want to analyze.
+Please make sure to change *"path"* to the path of the PDF file you want to analyze.
 
 ```bash
 python3 -m chatgpt-report-analysis "path"

@@ -19,7 +19,8 @@ Before you begin, ensure you have met the following requirements:
   - **"model"**
   - **"request_size"**
   - **"answer_size"**
-  - **"question"**  
+  - **"question"**
+- For further details please visit [OpenAI API](https://platform.openai.com/docs/models/overview)
 
 ## Feature
 

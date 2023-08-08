@@ -1,5 +1,5 @@
 # chatgpt-report-analysis
-A simple tool to make financial reports digestable. Utilize the capabilities of OpenAI's API to read the text of PDFs of a Financial Report and ask your question about it to get an overview and save time.
+A simple tool to make financial reports digestible. Utilize the capabilities of OpenAI's API to read the text of PDFs of a Financial Report and ask your question about it to get an overview and save time.
 
 ## Prerequisites
 

@@ -1,5 +1,5 @@
-import prepare_pdf as prep
-import variables
+from . import prepare_pdf as prep
+from . import variables
 import openai
 import sys
 import os
@@ -25,10 +25,8 @@ def get_response(file_path: str):
     return response
 
 
-if __name__ == "__main__":
-
-    if not os.path.isfile(sys.argv[1]):
-        print(f"File path {sys.argv[1]} does not exist.")
-        sys.exit(1)
-
+if not os.path.isfile(sys.argv[1]):
+    print(f"File path {sys.argv[1]} does not exist.")
+    sys.exit(1)
+else:
     get_response(sys.argv[1])
